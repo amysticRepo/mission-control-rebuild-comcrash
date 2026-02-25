@@ -1,0 +1,13 @@
+{
+  "name": "mission-control-v1",
+  "version": "1.0.2",
+  "description": "Mission Control Dashboard - OpenClaw Command Center",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node api/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

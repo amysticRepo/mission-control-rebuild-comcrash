@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Links | OpenClaw Mission Control</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .page-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+        
+        .page-header {
+            margin-bottom: 32px;
+        }
+        
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .link-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .link-card:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .link-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .link-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .link-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+        
+        .link-status.connected { color: var(--accent-green); }
+        .link-status.syncing { color: var(--accent-yellow); }
+        .link-status.disconnected { color: var(--accent-red); }
+        
+        .link-visual {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .link-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .node-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .node-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .link-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-cyan));
+            margin: 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .link-line::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, white, transparent);
+            animation: linkPulse 2s linear infinite;
+        }
+        
+        @keyframes linkPulse {
+            0% { left: -40px; }
+            100% { left: 100%; }
+        }
+        
+        .link-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .metric-item {
+            text-align: center;
+        }
+        
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .metric-value {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            color: var(--accent-cyan);
+        }
+        
+        .connection-log {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 32px;
+        }
+        
+        .log-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            color: var(--accent-cyan);
+        }
+        
+        .log-entries {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 12px;
+        }
+        
+        .log-time {
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            min-width: 60px;
+        }
+        
+        .log-type {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .log-type.connect { background: rgba(0, 255, 136, 0.15); color: var(--accent-green); }
+        .log-type.sync { background: rgba(255, 184, 0, 0.15); color: var(--accent-yellow); }
+        .log-type.data { background: rgba(0, 212, 255, 0.15); color: var(--accent-cyan); }
+        .log-type.error { background: rgba(255, 59, 92, 0.15); color: var(--accent-red); }
+        
+        .log-message {
+            color: var(--text-secondary);
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-left">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                    <span>OpenClaw</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="index.html" class="nav-link" data-page="dashboard">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 13h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1zm-1 7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v4zm10 0a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v7zm1-10h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1z"/></svg>
+                        DASHBOARD
+                    </a>
+                    <a href="tactical-map.html" class="nav-link" data-page="tactical-map">Tactical Map</a>
+                    <a href="neural-links.html" class="nav-link active" data-page="neural-links">Neural Links</a>
+                    <a href="archive.html" class="nav-link" data-page="archive">Archive</a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="core-status">
+                    <span class="status-dot online"></span>
+                    <span>CORE: STABLE (98.4%)</span>
+                </div>
+                <div class="header-icons">
+                    <button class="icon-btn" title="Notifications">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+                    </button>
+                    <button class="icon-btn" title="Display">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <span class="user-name">Commander Jarvis</span>
+                        <span class="user-level">LVL 4 ADMIN</span>
+                    </div>
+                    <div class="user-avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%231a2332'/%3E%3Ccircle cx='50' cy='40' r='20' fill='%2300d4ff'/%3E%3Cpath d='M50 65c-20 0-35 15-35 35h70c0-20-15-35-35-35z' fill='%2300d4ff'/%3E%3C/svg%3E" alt="Avatar">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">NEURAL LINKS</h1>
+                <p class="page-subtitle">Active Connections & Data Pathways • 7 Links Established</p>
+            </div>
+
+            <!-- Links Grid -->
+            <div class="links-grid">
+                <div class="link-card">
+                    <div class="link-header">
+                        <span class="link-title">CORE ↔ RELAY-ALPHA</span>
+                        <span class="link-status connected"><span class="status-dot online"></span>CONNECTED</span>
+                    </div>
+                    <div class="link-visual">
+                        <div class="link-node">
+                            <div class="node-icon">🖥️</div>
+                            <span class="node-label">CORE</span>
+                        </div>
+                        <div class="link-line"></div>
+                        <div class="link-node">
+                            <div class="node-icon">📡</div>
+                            <span class="node-label">RELAY-A</span>
+                        </div>
+                    </div>
+                    <div class="link-metrics">
+                        <div class="metric-item">
+                            <div class="metric-label">LATENCY</div>
+                            <div class="metric-value">8ms</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">BANDWIDTH</div>
+                            <div class="metric-value">1.4GB/s</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">UPTIME</div>
+                            <div class="metric-value">99.9%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="link-card">
+                    <div class="link-header">
+                        <span class="link-title">HQ ↔ MOBILE-LAB</span>
+                        <span class="link-status syncing"><span class="status-dot warning"></span>SYNCING</span>
+                    </div>
+                    <div class="link-visual">
+                        <div class="link-node">
+                            <div class="node-icon">🏢</div>
+                            <span class="node-label">HQ</span>
+                        </div>
+                        <div class="link-line"></div>
+                        <div class="link-node">
+                            <div class="node-icon">🔬</div>
+                            <span class="node-label">M-LAB</span>
+                        </div>
+                    </div>
+                    <div class="link-metrics">
+                        <div class="metric-item">
+                            <div class="metric-label">LATENCY</div>
+                            <div class="metric-value">45ms</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">BANDWIDTH</div>
+                            <div class="metric-value">800MB/s</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">SYNC</div>
+                            <div class="metric-value">72%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="link-card">
+                    <div class="link-header">
+                        <span class="link-title">SATELLITE ↔ GROUND</span>
+                        <span class="link-status connected"><span class="status-dot online"></span>CONNECTED</span>
+                    </div>
+                    <div class="link-visual">
+                        <div class="link-node">
+                            <div class="node-icon">🛰️</div>
+                            <span class="node-label">SAT-7</span>
+                        </div>
+                        <div class="link-line"></div>
+                        <div class="link-node">
+                            <div class="node-icon">🌍</div>
+                            <span class="node-label">GROUND</span>
+                        </div>
+                    </div>
+                    <div class="link-metrics">
+                        <div class="metric-item">
+                            <div class="metric-label">LATENCY</div>
+                            <div class="metric-value">120ms</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">BANDWIDTH</div>
+                            <div class="metric-value">500MB/s</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">SIGNAL</div>
+                            <div class="metric-value">-45dB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="link-card">
+                    <div class="link-header">
+                        <span class="link-title">AI-CORE ↔ GATEWAY</span>
+                        <span class="link-status connected"><span class="status-dot online"></span>CONNECTED</span>
+                    </div>
+                    <div class="link-visual">
+                        <div class="link-node">
+                            <div class="node-icon">🧠</div>
+                            <span class="node-label">AI-CORE</span>
+                        </div>
+                        <div class="link-line"></div>
+                        <div class="link-node">
+                            <div class="node-icon">🚪</div>
+                            <span class="node-label">GATEWAY</span>
+                        </div>
+                    </div>
+                    <div class="link-metrics">
+                        <div class="metric-item">
+                            <div class="metric-label">LATENCY</div>
+                            <div class="metric-value">2ms</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">TOKENS/S</div>
+                            <div class="metric-value">12.4K</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">MODEL</div>
+                            <div class="metric-value">Opus</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connection Log -->
+            <div class="connection-log">
+                <h3 class="log-title">CONNECTION LOG</h3>
+                <div class="log-entries">
+                    <div class="log-entry">
+                        <span class="log-time">10:24:15</span>
+                        <span class="log-type connect">CONNECT</span>
+                        <span class="log-message">Neural link established with RELAY-ALPHA. Handshake complete.</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">10:23:42</span>
+                        <span class="log-type sync">SYNC</span>
+                        <span class="log-message">HQ ↔ MOBILE-LAB synchronization initiated. Progress: 72%</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">10:22:08</span>
+                        <span class="log-type data">DATA</span>
+                        <span class="log-message">Satellite uplink confirmed. Signal strength optimal at -45dB.</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">10:21:33</span>
+                        <span class="log-type connect">CONNECT</span>
+                        <span class="log-message">AI-CORE gateway link verified. Token throughput: 12.4K/s</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">10:20:15</span>
+                        <span class="log-type data">DATA</span>
+                        <span class="log-message">Encryption layer refreshed. AES-2048-BIT active on all channels.</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">10:18:42</span>
+                        <span class="log-type error">RETRY</span>
+                        <span class="log-message">Temporary packet loss on SAT-7. Auto-recovery successful.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-left">
+                <span class="footer-stat">
+                    <span class="status-dot online"></span>
+                    LATENCY: 12ms
+                </span>
+                <span class="footer-stat">
+                    <span class="status-dot warning"></span>
+                    BANDWIDTH: 40%
+                </span>
+                <span class="footer-stat">
+                    <span class="status-dot online"></span>
+                    ENCRYPTION: AES-2048-BIT
+                </span>
+            </div>
+            <div class="footer-right">
+                <span class="footer-coord">COORD: 34.0522° N, 118.2437° W</span>
+                <span class="footer-version">V1.0.2-RELEASE-STABLE</span>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
