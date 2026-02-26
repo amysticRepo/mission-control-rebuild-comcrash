@@ -1,39 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily News Module | OpenClaw Mission Control</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Flatpickr for Date Selection -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <style>
         .page-content {
             flex: 1;
             padding: 24px 32px;
             overflow-y: auto;
         }
-        
+
         .news-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 28px;
         }
-        
+
         .news-header-left {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .news-badges {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        
+
         .badge-sync {
             background: rgba(0, 212, 255, 0.2);
             color: var(--accent-cyan);
@@ -44,44 +50,44 @@
             font-weight: 600;
             letter-spacing: 0.5px;
         }
-        
+
         .badge-module {
             color: var(--text-muted);
             font-family: var(--font-mono);
             font-size: 11px;
         }
-        
+
         .news-title {
             font-family: var(--font-display);
             font-size: 32px;
             font-weight: 700;
             letter-spacing: 3px;
         }
-        
+
         .news-title span {
             color: var(--accent-cyan);
             font-style: italic;
         }
-        
+
         .news-header-right {
             display: flex;
             align-items: center;
             gap: 20px;
         }
-        
+
         .date-selector {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .date-selector label {
             font-family: var(--font-mono);
             font-size: 10px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
         }
-        
+
         .date-input {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -92,39 +98,39 @@
             font-size: 12px;
             cursor: pointer;
         }
-        
+
         .date-input:focus {
             outline: none;
             border-color: var(--accent-cyan);
         }
-        
+
         .data-velocity {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             gap: 4px;
         }
-        
+
         .velocity-label {
             font-family: var(--font-mono);
             font-size: 10px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
         }
-        
+
         .velocity-display {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .velocity-value {
             font-family: var(--font-display);
             font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
         }
-        
+
         .velocity-bar {
             width: 80px;
             height: 6px;
@@ -132,14 +138,14 @@
             border-radius: 3px;
             overflow: hidden;
         }
-        
+
         .velocity-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
             border-radius: 3px;
             transition: width 0.5s ease;
         }
-        
+
         .sync-btn {
             display: flex;
             align-items: center;
@@ -156,44 +162,49 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .sync-btn:hover {
             background: var(--accent-cyan);
             color: var(--bg-primary);
         }
-        
+
         .sync-btn.syncing {
             opacity: 0.7;
             pointer-events: none;
         }
-        
+
         .sync-btn svg {
             width: 16px;
             height: 16px;
         }
-        
+
         .sync-btn.syncing svg {
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
-        
+
         /* News Grid */
         .news-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 24px;
         }
-        
+
         .news-column {
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
-        
+
         .column-header {
             display: flex;
             justify-content: space-between;
@@ -201,19 +212,19 @@
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .column-title-group {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
+
         .column-icon {
             width: 20px;
             height: 20px;
             color: var(--accent-cyan);
         }
-        
+
         .column-title {
             font-family: var(--font-display);
             font-size: 14px;
@@ -221,7 +232,7 @@
             letter-spacing: 1.5px;
             color: var(--text-primary);
         }
-        
+
         .column-count {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -231,13 +242,13 @@
             font-size: 10px;
             color: var(--text-secondary);
         }
-        
+
         .trending-count {
             font-family: var(--font-mono);
             font-size: 11px;
             color: var(--text-muted);
         }
-        
+
         .news-cards {
             display: flex;
             flex-direction: column;
@@ -245,7 +256,7 @@
             max-height: calc(100vh - 340px);
             overflow-y: auto;
         }
-        
+
         .news-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -253,19 +264,19 @@
             padding: 16px;
             transition: all 0.2s ease;
         }
-        
+
         .news-card:hover {
             border-color: var(--accent-cyan);
             transform: translateY(-2px);
         }
-        
+
         .news-card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 10px;
         }
-        
+
         .news-category {
             padding: 3px 8px;
             border-radius: 4px;
@@ -274,27 +285,27 @@
             font-weight: 600;
             letter-spacing: 0.5px;
         }
-        
+
         .news-category.breaking {
             background: rgba(255, 59, 92, 0.2);
             color: var(--accent-red);
         }
-        
+
         .news-category.politics {
             background: rgba(168, 85, 247, 0.2);
             color: #a855f7;
         }
-        
+
         .news-category.economy {
             background: rgba(255, 184, 0, 0.2);
             color: var(--accent-yellow);
         }
-        
+
         .news-category.tech {
             background: rgba(0, 212, 255, 0.2);
             color: var(--accent-cyan);
         }
-        
+
         .news-category.live {
             background: rgba(255, 59, 92, 0.3);
             color: var(--accent-red);
@@ -302,7 +313,7 @@
             align-items: center;
             gap: 5px;
         }
-        
+
         .news-category.live::before {
             content: '';
             width: 6px;
@@ -311,28 +322,28 @@
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
-        
+
         .news-category.synthetic {
             background: rgba(0, 255, 136, 0.2);
             color: var(--accent-green);
         }
-        
+
         .news-category.ai {
             background: rgba(0, 212, 255, 0.2);
             color: var(--accent-cyan);
         }
-        
+
         .news-category.world {
             background: rgba(100, 150, 255, 0.2);
             color: #6496ff;
         }
-        
+
         .news-timestamp {
             font-family: var(--font-mono);
             font-size: 10px;
             color: var(--text-muted);
         }
-        
+
         .news-headline {
             font-size: 15px;
             font-weight: 600;
@@ -340,41 +351,41 @@
             line-height: 1.4;
             margin-bottom: 12px;
         }
-        
+
         .news-card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .viral-score {
             display: flex;
             flex-direction: column;
             gap: 2px;
         }
-        
+
         .viral-label {
             font-family: var(--font-mono);
             font-size: 9px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
         }
-        
+
         .viral-value {
             font-family: var(--font-display);
             font-size: 14px;
             font-weight: 600;
             color: var(--accent-cyan);
         }
-        
+
         .viral-value.high {
             color: var(--accent-green);
         }
-        
+
         .viral-value.medium {
             color: var(--accent-yellow);
         }
-        
+
         .news-link {
             width: 32px;
             height: 32px;
@@ -388,23 +399,69 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .news-link:hover {
             border-color: var(--accent-cyan);
             color: var(--accent-cyan);
         }
-        
+
         .news-link svg {
             width: 14px;
             height: 14px;
         }
-        
+
         .viewers-count {
             font-family: var(--font-mono);
             font-size: 10px;
             color: var(--text-muted);
         }
-        
+
+        /* AI Scrollable Feed */
+        .ai-scrollable-feed {
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .ai-scrollable-feed::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .ai-scrollable-feed::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .ai-scrollable-feed::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .ai-scrollable-feed::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .news-thumbnail {
+            margin-top: 12px;
+            margin-bottom: 4px;
+            width: 100%;
+            height: 140px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .news-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover .news-thumbnail img {
+            transform: scale(1.05);
+        }
+
         /* Pagination Controls */
         .pagination-controls {
             display: flex;
@@ -443,7 +500,7 @@
             font-size: 11px;
             color: var(--text-muted);
         }
-        
+
         /* News Footer */
         .news-footer {
             display: flex;
@@ -453,12 +510,12 @@
             padding-top: 16px;
             border-top: 1px solid var(--border-color);
         }
-        
+
         .footer-stats {
             display: flex;
             gap: 24px;
         }
-        
+
         .footer-stat {
             display: flex;
             align-items: center;
@@ -466,19 +523,19 @@
             font-family: var(--font-mono);
             font-size: 11px;
         }
-        
+
         .footer-stat-label {
             color: var(--text-muted);
         }
-        
+
         .footer-stat-value {
             color: var(--accent-cyan);
         }
-        
+
         .footer-stat-value.connected {
             color: var(--accent-green);
         }
-        
+
         .footer-right {
             display: flex;
             align-items: center;
@@ -486,16 +543,16 @@
             font-family: var(--font-mono);
             font-size: 11px;
         }
-        
+
         .data-filter {
             color: var(--text-muted);
         }
-        
+
         .intel-stream {
             color: var(--accent-cyan);
             letter-spacing: 1px;
         }
-        
+
         /* Loading state */
         .loading-state {
             display: flex;
@@ -505,7 +562,23 @@
             padding: 40px;
             color: var(--text-muted);
         }
-        
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            color: var(--accent-cyan);
+            opacity: 0.6;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            border: 1px dashed rgba(0, 212, 255, 0.2);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
         .loading-spinner {
             width: 40px;
             height: 40px;
@@ -515,66 +588,66 @@
             animation: spin 1s linear infinite;
             margin-bottom: 12px;
         }
-        
+
         /* Responsive */
         @media (max-width: 1200px) {
             .news-grid {
                 grid-template-columns: 1fr 1fr;
             }
-            
+
             .news-column:last-child {
                 grid-column: span 2;
             }
-            
+
             .news-column:last-child .news-cards {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 12px;
             }
         }
-        
+
         @media (max-width: 900px) {
             .page-content {
                 padding: 16px;
             }
-            
+
             .news-header {
                 flex-direction: column;
                 gap: 16px;
             }
-            
+
             .news-header-right {
                 width: 100%;
                 flex-wrap: wrap;
             }
-            
+
             .news-title {
                 font-size: 22px;
             }
         }
-        
+
         @media (max-width: 768px) {
             .news-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .news-column:last-child {
                 grid-column: span 1;
             }
-            
+
             .news-column:last-child .news-cards {
                 grid-template-columns: 1fr;
             }
-            
+
             .news-cards {
                 max-height: 400px;
             }
-            
+
             .news-footer {
                 flex-direction: column;
                 gap: 12px;
             }
-            
+
             .footer-stats {
                 flex-wrap: wrap;
                 justify-content: center;
@@ -582,6 +655,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="app">
         <!-- Header -->
@@ -589,17 +663,25 @@
             <div class="header-left">
                 <div class="logo">
                     <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            fill="currentColor" />
                     </svg>
                     <span>OpenClaw</span>
                 </div>
                 <nav class="main-nav">
                     <a href="index.html" class="nav-link">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 13h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1zm-1 7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v4zm10 0a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v7zm1-10h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M4 13h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1zm-1 7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v4zm10 0a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v7zm1-10h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1z" />
+                        </svg>
                         Mission Control
                     </a>
                     <a href="daily-news.html" class="nav-link active">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                        </svg>
                         Daily News
                     </a>
                     <a href="tactical-map.html" class="nav-link">Tactical Map</a>
@@ -614,10 +696,16 @@
                 </div>
                 <div class="header-icons">
                     <button class="icon-btn" title="Notifications">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
+                        </svg>
                     </button>
                     <button class="icon-btn" title="Settings">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+                        </svg>
                     </button>
                 </div>
                 <div class="user-info">
@@ -626,7 +714,8 @@
                         <span class="user-level">LVL 4 ADMIN</span>
                     </div>
                     <div class="user-avatar">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%231a2332'/%3E%3Ccircle cx='50' cy='40' r='20' fill='%2300d4ff'/%3E%3Cpath d='M50 65c-20 0-35 15-35 35h70c0-20-15-35-35-35z' fill='%2300d4ff'/%3E%3C/svg%3E" alt="Avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%231a2332'/%3E%3Ccircle cx='50' cy='40' r='20' fill='%2300d4ff'/%3E%3Cpath d='M50 65c-20 0-35 15-35 35h70c0-20-15-35-35-35z' fill='%2300d4ff'/%3E%3C/svg%3E"
+                            alt="Avatar">
                     </div>
                 </div>
             </div>
@@ -659,7 +748,8 @@
                     </div>
                     <button class="sync-btn" id="sync-btn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                            <path
+                                d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
                         </svg>
                         SYNC FEED
                     </button>
@@ -673,7 +763,8 @@
                     <div class="column-header">
                         <div class="column-title-group">
                             <svg class="column-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                             </svg>
                             <span class="column-title">GLOBAL INTELLIGENCE</span>
                         </div>
@@ -692,7 +783,8 @@
                     <div class="column-header">
                         <div class="column-title-group">
                             <svg class="column-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+                                <path
+                                    d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z" />
                             </svg>
                             <span class="column-title">TECH & WORLD</span>
                         </div>
@@ -711,7 +803,8 @@
                     <div class="column-header">
                         <div class="column-title-group">
                             <svg class="column-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM9 8l7 4-7 4V8z"/>
+                                <path
+                                    d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM9 8l7 4-7 4V8z" />
                             </svg>
                             <span class="column-title">MEDIA FEED: AI</span>
                         </div>
@@ -772,6 +865,8 @@
         </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="news.js"></script>
 </body>
+
 </html>

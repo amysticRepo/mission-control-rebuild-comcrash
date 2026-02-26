@@ -29,10 +29,30 @@ app.get('/api/tasks', async (req, res) => {
     }
 });
 
+// API endpoint to serve available news dates
+app.get('/api/news/dates', async (req, res) => {
+    try {
+        const cacheData = await fs.readFile(newsPath, 'utf8');
+        const newsCache = JSON.parse(cacheData);
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        const dates = new Set(Object.keys(newsCache));
+        dates.add(todayStr); // Ensure today is always selectable
+
+        const sortedDates = Array.from(dates).sort((a, b) => b.localeCompare(a));
+        res.status(200).json(sortedDates);
+    } catch (error) {
+        // Fallback if cache doesn't exist
+        const todayStr = new Date().toISOString().split('T')[0];
+        res.status(200).json([todayStr]);
+    }
+});
+
 // API endpoint to serve news data
 app.get('/api/news', async (req, res) => {
     try {
-        const requestedDate = req.query.date || new Date().toISOString().split('T')[0];
+        const todayStr = new Date().toISOString().split('T')[0];
+        const requestedDate = req.query.date || todayStr;
         const forceRefresh = req.query.refresh === 'true';
 
         // Try to load cached news
@@ -49,7 +69,13 @@ app.get('/api/news', async (req, res) => {
             return res.status(200).json(newsCache[requestedDate]);
         }
 
-        // Fetch fresh news from SERP API
+        // If they requested a past date and it's not in the cache, don't fetch today's news for it.
+        // Also don't allow future dates, but the frontend restricts that.
+        if (requestedDate !== todayStr) {
+            return res.status(200).json({ global: [], tech: [], ai: [] });
+        }
+
+        // Fetch fresh news from SERP API for today
         const newsData = await fetchAllNews();
 
         // Cache the results
@@ -132,7 +158,8 @@ function processNewsResults(results, categories, limit = 4) {
             viralScore: parseFloat(viralScore),
             url: item.link || '#',
             source: item.source?.name || item.channel?.name || 'Unknown',
-            viewers: item.views ? `${(item.views / 1000).toFixed(1)}K` : undefined
+            viewers: item.views ? `${(item.views / 1000).toFixed(1)}K` : undefined,
+            thumbnail: item.thumbnail?.static || item.thumbnail || undefined
         };
     });
 }
