@@ -178,6 +178,17 @@
       "tagType": "grid",
       "createdAt": "2026-02-26T16:27:27.188352Z",
       "startedAt": "2026-02-26T16:27:27.188352Z"
+    },
+    {
+      "id": 18,
+      "code": "UI-MOBILE-JUMP",
+      "title": "Mobile jump-to-column tabs",
+      "description": "Add a small sticky mini-tabs bar on mobile to jump to Pending / In Progress / Success sections quickly.",
+      "priority": "medium",
+      "estimate": "20m",
+      "status": "pending",
+      "tagType": "grid",
+      "createdAt": "2026-02-26T16:35:50.042731Z"
     }
   ],
   "systemStatus": {
