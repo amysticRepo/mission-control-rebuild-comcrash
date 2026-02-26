@@ -29,6 +29,34 @@ app.get('/api/tasks', async (req, res) => {
     }
 });
 
+// Patch a task (status/progress/etc)
+app.patch('/api/tasks/:id', async (req, res) => {
+    try {
+        const taskId = String(req.params.id);
+        const allowed = new Set(['status', 'progress', 'progressLabel', 'completedAt']);
+        const updates = {};
+        for (const [k, v] of Object.entries(req.body || {})) {
+            if (allowed.has(k)) updates[k] = v;
+        }
+
+        const data = await fs.readFile(dbPath, 'utf8');
+        const jsonData = JSON.parse(data);
+        const list = jsonData.tasks || [];
+
+        const idx = list.findIndex(t => String(t.id) === taskId);
+        if (idx === -1) return res.status(404).json({ error: 'Task not found' });
+
+        list[idx] = { ...list[idx], ...updates };
+        jsonData.tasks = list;
+        await fs.writeFile(dbPath, JSON.stringify(jsonData, null, 2));
+
+        res.status(200).json(list[idx]);
+    } catch (error) {
+        console.error('API ERROR: Failed to patch task:', error);
+        res.status(500).json({ error: 'Internal Server Error: Could not update task.' });
+    }
+});
+
 // API endpoint to serve available news dates
 app.get('/api/news/dates', async (req, res) => {
     try {

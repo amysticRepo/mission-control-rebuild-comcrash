@@ -100,6 +100,32 @@ function renderTaskColumn(taskList, container, status) {
     });
 }
 
+// Persist a single task status update to the backend (best-effort)
+async function persistTaskStatus(taskId, status, extra = {}) {
+    try {
+        await fetch(`/api/tasks/${taskId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status, ...extra })
+        });
+    } catch (e) {
+        // Best-effort only; UI still updates locally
+    }
+}
+
+// Move a task between columns in local state
+function moveTask(taskId, fromStatus, toStatus, extra = {}) {
+    const fromList = tasks[fromStatus] || [];
+    const idx = fromList.findIndex(t => String(t.id) === String(taskId));
+    if (idx === -1) return null;
+
+    const removed = fromList.splice(idx, 1);
+    const task = removed[0];
+    Object.assign(task, { status: toStatus, ...extra });
+    (tasks[toStatus] = tasks[toStatus] || []).unshift(task);
+    return task;
+}
+
 // Create a task card element
 function createTaskCard(task, status) {
     const card = document.createElement('div');
@@ -121,6 +147,7 @@ function createTaskCard(task, status) {
             <div class="task-footer">
                 <span class="task-priority ${task.priority || 'medium'}">${(task.priority || 'MEDIUM').toUpperCase()}</span>
                 ${task.estimate ? `<span class="task-estimate">EST. ${task.estimate}</span>` : ''}
+                <button class="task-action-btn start-task-btn" type="button" data-action="start" data-task-id="${task.id}">START</button>
             </div>
         `;
     } else if (status === 'in-progress') {
@@ -168,6 +195,30 @@ function createTaskCard(task, status) {
 
     return card;
 }
+
+// Handle task board actions (start)
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.task-action-btn');
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    const taskId = btn.dataset.taskId;
+    if (!action || !taskId) return;
+
+    if (action === 'start') {
+        // Pending -> In Progress
+        const moved = moveTask(taskId, 'pending', 'in-progress', {
+            progress: 0,
+            progressLabel: 'INITIALIZING...'
+        });
+        if (!moved) return;
+
+        renderAllTasks();
+        updateCounts();
+        addLog(`Protocol ${moved.code} started.`, 'success');
+        persistTaskStatus(taskId, 'in-progress', { progress: 0, progressLabel: 'INITIALIZING...' });
+    }
+});
 
 // Get tag type from code
 function getTagTypeFromCode(code) {
@@ -328,14 +379,41 @@ function addLog(message, type = 'normal') {
 // Simulate progress updates for in-progress tasks
 setInterval(() => {
     let updated = false;
+
     tasks['in-progress'].forEach(task => {
         if (task.progress !== undefined && task.progress < 100) {
-            task.progress = Math.min(task.progress + Math.random() * 0.5, 100);
+            task.progress = Math.min(task.progress + (0.2 + Math.random() * 1.5), 100);
+
+            if (task.progress >= 100) {
+                task.progress = 100;
+                task.progressLabel = 'COMPLETE';
+            } else if (task.progress > 80) {
+                task.progressLabel = 'FINALIZING...';
+            } else if (task.progress > 40) {
+                task.progressLabel = 'PROCESSING...';
+            }
+
             updated = true;
         }
     });
-    if (updated && progressTasksContainer) {
-        renderTaskColumn(tasks['in-progress'], progressTasksContainer, 'in-progress');
+
+    if (updated) {
+        const completedIds = tasks['in-progress']
+            .filter(t => t.progress !== undefined && t.progress >= 100)
+            .map(t => t.id);
+
+        if (completedIds.length) {
+            completedIds.forEach(id => {
+                const moved = moveTask(id, 'in-progress', 'success', { completedAt: new Date().toISOString() });
+                if (moved) {
+                    addLog(`Protocol ${moved.code} completed.`, 'success');
+                    persistTaskStatus(id, 'success', { completedAt: moved.completedAt });
+                }
+            });
+        }
+
+        renderAllTasks();
+        updateCounts();
     }
 }, 5000);
 
