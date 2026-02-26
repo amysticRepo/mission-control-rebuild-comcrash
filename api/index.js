@@ -132,7 +132,8 @@ function processNewsResults(results, categories, limit = 4) {
             viralScore: parseFloat(viralScore),
             url: item.link || '#',
             source: item.source?.name || item.channel?.name || 'Unknown',
-            viewers: item.views ? `${(item.views / 1000).toFixed(1)}K` : undefined
+            viewers: item.views ? `${(item.views / 1000).toFixed(1)}K` : undefined,
+            thumbnail: item.thumbnail?.static || item.thumbnail || undefined
         };
     });
 }

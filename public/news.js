@@ -119,6 +119,20 @@ function renderNews(data) {
 function renderColumn(type, container, countEl, countSuffix, isAI = false) {
     const items = currentNewsData[type] || [];
     const pState = paginationState[type];
+
+    // For AI feed, render all items inside a scrollable container
+    if (isAI) {
+        if (items.length > 0) {
+            let html = items.map(item => createNewsCard(item, isAI)).join('');
+            container.innerHTML = `<div class="ai-scrollable-feed">${html}</div>`;
+            countEl.textContent = `${countSuffix}${items.length}`;
+        } else {
+            container.innerHTML = `<div class="loading-state"><span>No ${type} news available</span></div>`;
+            countEl.textContent = `${countSuffix}0`;
+        }
+        return;
+    }
+
     const totalPages = Math.ceil(items.length / pState.limit) || 1;
 
     if (items.length > 0) {
@@ -139,18 +153,10 @@ function renderColumn(type, container, countEl, countSuffix, isAI = false) {
         }
 
         container.innerHTML = html;
-        if (isAI) {
-            countEl.textContent = `${countSuffix}${items.length}`;
-        } else {
-            countEl.textContent = type === 'tech' ? `${String(items.length).padStart(2, '0')} ${countSuffix}` : `${items.length} ${countSuffix}`;
-        }
+        countEl.textContent = type === 'tech' ? `${String(items.length).padStart(2, '0')} ${countSuffix}` : `${items.length} ${countSuffix}`;
     } else {
         container.innerHTML = `<div class="loading-state"><span>No ${type} news available</span></div>`;
-        if (isAI) {
-            countEl.textContent = `${countSuffix}0`;
-        } else {
-            countEl.textContent = type === 'tech' ? `00 ${countSuffix}` : `0 ${countSuffix}`;
-        }
+        countEl.textContent = type === 'tech' ? `00 ${countSuffix}` : `0 ${countSuffix}`;
     }
 }
 
@@ -175,6 +181,15 @@ function createNewsCard(item, isAI = false) {
         viewersHTML = `<span class="viewers-count">${item.viewers} WATCHING</span>`;
     }
 
+    let thumbnailHTML = '';
+    if (isAI && item.thumbnail) {
+        thumbnailHTML = `
+            <div class="news-thumbnail">
+                <img src="${item.thumbnail}" alt="Video Thumbnail">
+            </div>
+        `;
+    }
+
     return `
         <div class="news-card">
             <div class="news-card-header">
@@ -182,6 +197,7 @@ function createNewsCard(item, isAI = false) {
                 <span class="news-timestamp">${viewersHTML || timestamp}</span>
             </div>
             <h3 class="news-headline">${item.headline}</h3>
+            ${thumbnailHTML}
             <div class="news-card-footer">
                 <div class="viral-score">
                     <span class="viral-label">VIRAL SCORE</span>
