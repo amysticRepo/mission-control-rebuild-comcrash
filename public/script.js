@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchTasks();
     initModal();
     initLogs();
+    initMobileModules();
 });
 
 // Fetch tasks from API
@@ -328,6 +329,29 @@ function closeModal() {
     if (newTaskForm) {
         newTaskForm.reset();
     }
+}
+
+// Mobile modules dropdown
+function initMobileModules() {
+    const btn = document.getElementById('mobile-modules-btn');
+    const overlay = document.getElementById('mobile-modules-overlay');
+    const close = document.getElementById('mobile-modules-close');
+
+    if (!btn || !overlay) return;
+
+    const openMenu = () => overlay.classList.add('active');
+    const closeMenu = () => overlay.classList.remove('active');
+
+    btn.addEventListener('click', openMenu);
+    if (close) close.addEventListener('click', closeMenu);
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeMenu();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeMenu();
+    });
 }
 
 function handleNewTask(e) {

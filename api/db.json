@@ -164,6 +164,20 @@
       "estimate": "10m",
       "startedAt": "2026-02-26T15:57:25.481020Z",
       "completedAt": "2026-02-26T16:19:19.443146Z"
+    },
+    {
+      "id": 17,
+      "code": "UI-MOBILE",
+      "title": "Mobile Responsive Improvements",
+      "description": "Make all pages mobile friendly: (1) each task column scrolls, (2) add Modules dropdown button for navigation on small screens.",
+      "priority": "high",
+      "estimate": "45m",
+      "status": "in-progress",
+      "progress": 80,
+      "progressLabel": "IMPLEMENTING...",
+      "tagType": "grid",
+      "createdAt": "2026-02-26T16:27:27.188352Z",
+      "startedAt": "2026-02-26T16:27:27.188352Z"
     }
   ],
   "systemStatus": {
