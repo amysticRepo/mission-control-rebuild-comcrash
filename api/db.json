@@ -133,6 +133,28 @@
       "status": "success",
       "tagType": "core",
       "completedAt": "2026-02-24T14:00:00Z"
+    },
+    {
+      "id": 15,
+      "code": "TASK-AUTO-MOVE",
+      "title": "Auto-move completed In-Progress tasks to Success",
+      "description": "If any task in In Progress reaches 100% completion, automatically move it to the Success column (and persist to backend).",
+      "priority": "high",
+      "estimate": "15m",
+      "status": "pending",
+      "tagType": "proc",
+      "createdAt": "2026-02-26T15:57:25.481020Z"
+    },
+    {
+      "id": 16,
+      "code": "NEXOS-CFG-RECHECK",
+      "title": "Nexos Provider Configuration (Recheck)",
+      "description": "Configured nexos provider with API key. Established model escalation strategy in USER.md. Re-queued for verification.",
+      "status": "pending",
+      "tagType": "core",
+      "createdAt": "2026-02-26T15:57:25.481020Z",
+      "priority": "medium",
+      "estimate": "10m"
     }
   ],
   "systemStatus": {
