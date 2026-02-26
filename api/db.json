@@ -7,11 +7,13 @@
       "description": "Complete pixel-perfect rebuild of Mission Control Dashboard with Node.js/Express backend and responsive frontend.",
       "priority": "critical",
       "estimate": "4h",
-      "status": "in-progress",
-      "progress": 95,
-      "progressLabel": "FINALIZING...",
+      "status": "success",
+      "progress": 100,
+      "progressLabel": "COMPLETE",
       "tagType": "core",
-      "createdAt": "2026-02-25T06:00:00Z"
+      "createdAt": "2026-02-25T06:00:00Z",
+      "startedAt": "2026-02-25T06:00:00Z",
+      "completedAt": "2026-02-26T16:17:12.505666Z"
     },
     {
       "id": 2,
@@ -19,10 +21,11 @@
       "title": "Vercel Production Deployment",
       "description": "Deploy Mission Control to Vercel production environment with proper routing configuration.",
       "priority": "high",
-      "status": "in-progress",
-      "warning": "AWAITING VERIFICATION",
+      "status": "success",
       "tagType": "proc",
-      "createdAt": "2026-02-25T10:40:00Z"
+      "createdAt": "2026-02-25T10:40:00Z",
+      "startedAt": "2026-02-25T10:40:00Z",
+      "completedAt": "2026-02-26T16:17:12.505666Z"
     },
     {
       "id": 3,
