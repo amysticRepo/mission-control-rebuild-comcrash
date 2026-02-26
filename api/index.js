@@ -33,7 +33,7 @@ app.get('/api/tasks', async (req, res) => {
 app.patch('/api/tasks/:id', async (req, res) => {
     try {
         const taskId = String(req.params.id);
-        const allowed = new Set(['status', 'progress', 'progressLabel', 'completedAt']);
+        const allowed = new Set(['status', 'progress', 'progressLabel', 'completedAt', 'startedAt']);
         const updates = {};
         for (const [k, v] of Object.entries(req.body || {})) {
             if (allowed.has(k)) updates[k] = v;

@@ -172,10 +172,14 @@ function createTaskCard(task, status) {
             `;
         }
     } else if (status === 'success') {
+        const completedText = task.completedAt ? formatDateTime(task.completedAt) : '';
+        const timeTaken = calcTimeTaken(task);
+
         footerHtml = `
             <div class="task-footer">
                 <span class="task-status completed">✓ COMPLETED</span>
-                ${task.completedAt ? `<span class="task-date">${formatDate(task.completedAt)}</span>` : ''}
+                ${timeTaken ? `<span class="task-estimate">Took ${timeTaken}</span>` : ''}
+                ${completedText ? `<span class="task-date">${completedText}</span>` : ''}
             </div>
         `;
     }
@@ -209,14 +213,15 @@ document.addEventListener('click', async (e) => {
         // Pending -> In Progress
         const moved = moveTask(taskId, 'pending', 'in-progress', {
             progress: 0,
-            progressLabel: 'INITIALIZING...'
+            progressLabel: 'INITIALIZING...',
+            startedAt: new Date().toISOString()
         });
         if (!moved) return;
 
         renderAllTasks();
         updateCounts();
         addLog(`Protocol ${moved.code} started.`, 'success');
-        persistTaskStatus(taskId, 'in-progress', { progress: 0, progressLabel: 'INITIALIZING...' });
+        persistTaskStatus(taskId, 'in-progress', { progress: 0, progressLabel: 'INITIALIZING...', startedAt: moved.startedAt });
     }
 });
 
@@ -238,10 +243,41 @@ function getTagTypeFromCode(code) {
     return mapping[prefix] || 'maint';
 }
 
-// Format date
+// Format date (date only)
 function formatDate(dateStr) {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Format date & time
+function formatDateTime(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Human-readable duration
+function formatDuration(ms) {
+    if (!ms || ms < 0) return '';
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    const h = Math.floor(m / 60);
+
+    if (h > 0) return `${h}h ${m % 60}m`;
+    if (m > 0) return `${m}m ${s % 60}s`;
+    return `${s}s`;
+}
+
+function calcTimeTaken(task) {
+    const start = task.startedAt || task.createdAt;
+    const end = task.completedAt;
+    if (!start || !end) return '';
+    const ms = new Date(end).getTime() - new Date(start).getTime();
+    return formatDuration(ms);
 }
 
 // Get avatar source
@@ -405,6 +441,9 @@ setInterval(() => {
         if (completedIds.length) {
             completedIds.forEach(id => {
                 const moved = moveTask(id, 'in-progress', 'success', { completedAt: new Date().toISOString() });
+                if (moved && !moved.startedAt) {
+                    moved.startedAt = moved.createdAt;
+                }
                 if (moved) {
                     addLog(`Protocol ${moved.code} completed.`, 'success');
                     persistTaskStatus(id, 'success', { completedAt: moved.completedAt });
