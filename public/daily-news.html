@@ -405,6 +405,45 @@
             color: var(--text-muted);
         }
         
+        /* Pagination Controls */
+        .pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding: 10px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .page-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--accent-cyan);
+            border-radius: 4px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+
+        .page-btn:disabled {
+            color: var(--text-muted);
+            border-color: var(--border-color);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
         /* News Footer */
         .news-footer {
             display: flex;

@@ -28,7 +28,7 @@ function initDatePicker() {
     const today = new Date().toISOString().split('T')[0];
     newsDateInput.value = today;
     newsDateInput.max = today;
-    
+
     newsDateInput.addEventListener('change', () => {
         loadNews(newsDateInput.value);
     });
@@ -39,7 +39,7 @@ function initSyncButton() {
     syncBtn.addEventListener('click', () => {
         syncBtn.classList.add('syncing');
         syncBtn.querySelector('svg').style.animation = 'spin 1s linear infinite';
-        
+
         // Force refresh news
         loadNews(newsDateInput.value, true).then(() => {
             setTimeout(() => {
@@ -54,16 +54,16 @@ async function loadNews(date = null, forceRefresh = false) {
     if (!date) {
         date = new Date().toISOString().split('T')[0];
     }
-    
+
     showLoading();
-    
+
     try {
-        const url = forceRefresh 
+        const url = forceRefresh
             ? `/api/news?date=${date}&refresh=true`
             : `/api/news?date=${date}`;
-            
+
         const response = await fetch(url);
-        
+
         if (response.ok) {
             const data = await response.json();
             renderNews(data);
@@ -95,47 +95,86 @@ function showLoading() {
     aiNewsContainer.innerHTML = loadingHTML;
 }
 
+let currentNewsData = { global: [], tech: [], ai: [] };
+let paginationState = {
+    global: { page: 1, limit: 3 },
+    tech: { page: 1, limit: 3 },
+    ai: { page: 1, limit: 3 }
+};
+
 // Render news to containers
 function renderNews(data) {
-    // Global Intelligence
-    if (data.global && data.global.length > 0) {
-        globalNewsContainer.innerHTML = data.global.map(item => createNewsCard(item)).join('');
-        globalCount.textContent = `${data.global.length} REPORTS`;
-    } else {
-        globalNewsContainer.innerHTML = '<div class="loading-state"><span>No global news available</span></div>';
-        globalCount.textContent = '0 REPORTS';
+    if (data) {
+        currentNewsData = data;
+        paginationState.global.page = 1;
+        paginationState.tech.page = 1;
+        paginationState.ai.page = 1;
     }
-    
-    // Tech & World
-    if (data.tech && data.tech.length > 0) {
-        techNewsContainer.innerHTML = data.tech.map(item => createNewsCard(item)).join('');
-        techCount.textContent = `${String(data.tech.length).padStart(2, '0')} LOCAL`;
+
+    renderColumn('global', globalNewsContainer, globalCount, 'REPORTS');
+    renderColumn('tech', techNewsContainer, techCount, 'LOCAL');
+    renderColumn('ai', aiNewsContainer, aiCount, 'TRENDING: ', true);
+}
+
+function renderColumn(type, container, countEl, countSuffix, isAI = false) {
+    const items = currentNewsData[type] || [];
+    const pState = paginationState[type];
+    const totalPages = Math.ceil(items.length / pState.limit) || 1;
+
+    if (items.length > 0) {
+        const start = (pState.page - 1) * pState.limit;
+        const end = start + pState.limit;
+        const pageItems = items.slice(start, end);
+
+        let html = pageItems.map(item => createNewsCard(item, isAI)).join('');
+
+        if (totalPages > 1) {
+            html += `
+                <div class="pagination-controls">
+                    <button class="page-btn" onclick="changePage('${type}', -1)" ${pState.page === 1 ? 'disabled' : ''}>&larr; PREV</button>
+                    <span class="page-info">PAGE ${pState.page} / ${totalPages}</span>
+                    <button class="page-btn" onclick="changePage('${type}', 1)" ${pState.page === totalPages ? 'disabled' : ''}>NEXT &rarr;</button>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+        if (isAI) {
+            countEl.textContent = `${countSuffix}${items.length}`;
+        } else {
+            countEl.textContent = type === 'tech' ? `${String(items.length).padStart(2, '0')} ${countSuffix}` : `${items.length} ${countSuffix}`;
+        }
     } else {
-        techNewsContainer.innerHTML = '<div class="loading-state"><span>No tech news available</span></div>';
-        techCount.textContent = '00 LOCAL';
-    }
-    
-    // AI Media Feed
-    if (data.ai && data.ai.length > 0) {
-        aiNewsContainer.innerHTML = data.ai.map(item => createNewsCard(item, true)).join('');
-        aiCount.textContent = `TRENDING: ${data.ai.length}`;
-    } else {
-        aiNewsContainer.innerHTML = '<div class="loading-state"><span>No AI news available</span></div>';
-        aiCount.textContent = 'TRENDING: 0';
+        container.innerHTML = `<div class="loading-state"><span>No ${type} news available</span></div>`;
+        if (isAI) {
+            countEl.textContent = `${countSuffix}0`;
+        } else {
+            countEl.textContent = type === 'tech' ? `00 ${countSuffix}` : `0 ${countSuffix}`;
+        }
     }
 }
+
+window.changePage = function (type, direction) {
+    paginationState[type].page += direction;
+    const containers = {
+        global: { c: globalNewsContainer, count: globalCount, suffix: 'REPORTS', isAI: false },
+        tech: { c: techNewsContainer, count: techCount, suffix: 'LOCAL', isAI: false },
+        ai: { c: aiNewsContainer, count: aiCount, suffix: 'TRENDING: ', isAI: true }
+    };
+    renderColumn(type, containers[type].c, containers[type].count, containers[type].suffix, containers[type].isAI);
+};
 
 // Create a news card HTML
 function createNewsCard(item, isAI = false) {
     const categoryClass = getCategoryClass(item.category);
     const viralClass = getViralClass(item.viralScore);
     const timestamp = formatTimestamp(item.timestamp || item.date);
-    
+
     let viewersHTML = '';
     if (item.viewers) {
         viewersHTML = `<span class="viewers-count">${item.viewers} WATCHING</span>`;
     }
-    
+
     return `
         <div class="news-card">
             <div class="news-card-header">
