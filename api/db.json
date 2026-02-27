@@ -172,12 +172,13 @@
       "description": "Make all pages mobile friendly: (1) each task column scrolls, (2) add Modules dropdown button for navigation on small screens.",
       "priority": "high",
       "estimate": "45m",
-      "status": "in-progress",
-      "progress": 80,
-      "progressLabel": "IMPLEMENTING...",
+      "status": "success",
+      "progress": 100,
+      "progressLabel": "COMPLETE",
       "tagType": "grid",
       "createdAt": "2026-02-26T16:27:27.188352Z",
-      "startedAt": "2026-02-26T16:27:27.188352Z"
+      "startedAt": "2026-02-26T16:27:27.188352Z",
+      "completedAt": "2026-02-27T05:21:38.478569Z"
     },
     {
       "id": 18,
@@ -186,9 +187,11 @@
       "description": "Add a small sticky mini-tabs bar on mobile to jump to Pending / In Progress / Success sections quickly.",
       "priority": "medium",
       "estimate": "20m",
-      "status": "pending",
+      "status": "success",
       "tagType": "grid",
-      "createdAt": "2026-02-26T16:35:50.042731Z"
+      "createdAt": "2026-02-26T16:35:50.042731Z",
+      "startedAt": "2026-02-26T16:35:50.042731Z",
+      "completedAt": "2026-02-27T05:21:38.478569Z"
     }
   ],
   "systemStatus": {
