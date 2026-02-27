@@ -192,6 +192,20 @@
       "createdAt": "2026-02-26T16:35:50.042731Z",
       "startedAt": "2026-02-26T16:35:50.042731Z",
       "completedAt": "2026-02-27T05:21:38.478569Z"
+    },
+    {
+      "id": 19,
+      "code": "FORK-MERGE",
+      "title": "Compare fork vs main and merge missing changes",
+      "description": "Compare Joshuasew fork against main; if fork has changes not in main, merge them cleanly and report what changed.",
+      "priority": "high",
+      "estimate": "20m",
+      "status": "in-progress",
+      "progress": 5,
+      "progressLabel": "SCANNING...",
+      "tagType": "proc",
+      "createdAt": "2026-02-27T05:35:06.670729Z",
+      "startedAt": "2026-02-27T05:35:06.670729Z"
     }
   ],
   "systemStatus": {
