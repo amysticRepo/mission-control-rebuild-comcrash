@@ -207,6 +207,20 @@
       "createdAt": "2026-02-27T05:35:06.670729Z",
       "startedAt": "2026-02-27T05:35:06.670729Z",
       "completedAt": "2026-02-27T05:35:40.127305Z"
+    },
+    {
+      "id": 20,
+      "code": "ADMIN-FORK-SYNC",
+      "title": "Admin: create fork + sync with current main",
+      "description": "Create a new fork and merge/sync it with current codebase; ensure fork stays updated with main. Track via admin subagent; mark success when completed.",
+      "priority": "medium",
+      "estimate": "30m",
+      "status": "in-progress",
+      "progress": 5,
+      "progressLabel": "DISPATCHING...",
+      "tagType": "proc",
+      "createdAt": "2026-02-27T05:53:33.994686Z",
+      "startedAt": "2026-02-27T05:53:33.994686Z"
     }
   ],
   "systemStatus": {
