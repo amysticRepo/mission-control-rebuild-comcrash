@@ -230,12 +230,13 @@
       "description": "Refresh Daily News cache for today immediately and verify daily-news.html loads; summarize headlines.",
       "priority": "medium",
       "estimate": "5m",
-      "status": "in-progress",
-      "progress": 5,
-      "progressLabel": "DISPATCHING TASKER...",
+      "status": "success",
+      "progress": 100,
+      "progressLabel": "COMPLETE",
       "tagType": "comms",
       "createdAt": "2026-02-28T11:23:22.028086Z",
-      "startedAt": "2026-02-28T11:23:22.028086Z"
+      "startedAt": "2026-02-28T11:23:22.028086Z",
+      "completedAt": "2026-02-28T11:28:38.757173Z"
     }
   ],
   "systemStatus": {
