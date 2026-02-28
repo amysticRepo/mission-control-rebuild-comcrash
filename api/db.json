@@ -222,6 +222,20 @@
       "createdAt": "2026-02-27T05:53:33.994686Z",
       "startedAt": "2026-02-27T05:53:33.994686Z",
       "completedAt": "2026-02-27T10:57:32.470377Z"
+    },
+    {
+      "id": 21,
+      "code": "NEWS-NOW",
+      "title": "Run Daily News refresh now",
+      "description": "Refresh Daily News cache for today immediately and verify daily-news.html loads; summarize headlines.",
+      "priority": "medium",
+      "estimate": "5m",
+      "status": "in-progress",
+      "progress": 5,
+      "progressLabel": "DISPATCHING TASKER...",
+      "tagType": "comms",
+      "createdAt": "2026-02-28T11:23:22.028086Z",
+      "startedAt": "2026-02-28T11:23:22.028086Z"
     }
   ],
   "systemStatus": {
