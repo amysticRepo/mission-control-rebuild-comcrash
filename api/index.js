@@ -10,7 +10,7 @@ const newsPath = path.resolve(process.cwd(), 'api', 'news-cache.json');
 const PORT = process.env.PORT || 3000;
 
 // SERP API Configuration
-const SERP_API_KEY = process.env.SERP_API_KEY || 'b992be08b4f3550953414dc41fea5e7fa007b6a388237baec1284ed07dd52c39';
+const SERP_API_KEY = process.env.SERP_API_KEY;
 
 app.use(express.json());
 
@@ -104,17 +104,24 @@ app.get('/api/news', async (req, res) => {
         }
 
         // Fetch fresh news from SERP API for today
+        if (!SERP_API_KEY) {
+            // No API key configured: return sample data but make it explicit.
+            const sample = getSampleNews();
+            return res.status(200).json({ ...sample, source: 'sample', error: 'SERP_API_KEY not configured' });
+        }
+
         const newsData = await fetchAllNews();
 
         // Cache the results
         newsCache[requestedDate] = newsData;
         await fs.writeFile(newsPath, JSON.stringify(newsCache, null, 2));
 
-        res.status(200).json(newsData);
+        res.status(200).json({ ...newsData, source: 'serp' });
     } catch (error) {
         console.error('API ERROR: Failed to fetch news:', error);
         // Return sample data on error
-        res.status(200).json(getSampleNews());
+        const sample = getSampleNews();
+        res.status(200).json({ ...sample, source: 'sample', error: 'SERP fetch failed' });
     }
 });
 
